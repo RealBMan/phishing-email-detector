@@ -222,5 +222,6 @@ data/
 venv/
 __pycache__/
 *.pkl
+models/          # trained artifacts — regenerate with: python -m src.train_model
 .env
 .claude/

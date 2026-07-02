@@ -2,7 +2,16 @@
 
 A machine-learning classifier that flags phishing emails, taking raw email
 through parsing, cleaning, and feature extraction to an explainable model. Runs
-fully offline — Python + scikit-learn, with a planned minimal Streamlit UI.
+fully offline — Python + scikit-learn, with a Streamlit UI that scores an email
+and highlights the words that drove the decision.
+
+## Demo
+
+![Demo of the phishing detector: paste an email, get a phishing score and the
+words highlighted by their contribution](assets/demo.gif)
+
+*Paste an email (or upload a `.eml`) → phishing score → the exact words that drove
+it, highlighted warm (phishing) or cool (legitimate) in the text.*
 
 ## Projected architecture
 
@@ -24,13 +33,13 @@ flowchart TD
 
     G --> H[Classifier<br/>Logistic Regression]
     H --> I[Phishing score 0–1]
-    I -.-> J[Explanation<br/>SHAP feature weights]
-    J -.-> K[Streamlit UI]
+    I --> J[Explanation<br/>linear feature contributions]
+    J --> K[Streamlit UI]
 
     classDef done fill:#e6f4ea,stroke:#34a853,color:#000;
     classDef planned fill:#f5f5f5,stroke:#999,stroke-dasharray:5 3,color:#333;
-    class A,B,C,D,G,H,I done;
-    class E,F,J,K planned;
+    class A,B,C,D,G,H,I,J,K done;
+    class E,F planned;
 ```
 
 ## Dataset
@@ -210,8 +219,9 @@ model limitation — diverse data beats clever features.**
       ceiling, and the resolution: diverse training data lifts phishing_pot recall
       0.58 → 0.99 with no precision cost. Optional follow-up: local sentence
       embeddings vs. TF-IDF.
-- [ ] **Phase 3 — UI + explainability.** Streamlit app (paste/upload an email →
-      phishing score + top contributing features via SHAP); demo GIF.
+- [~] **Phase 3 — UI + explainability.** Streamlit app (paste/upload an email →
+      phishing score + per-word contributions from the linear model) — done.
+      Remaining: demo GIF, optional deployment.
 
 ## Setup
 
@@ -236,17 +246,27 @@ The two OOD sets are held-out test data only — never used for training.
 ## Usage
 
 ```bash
-python -m src.train             # load, clean, train, evaluate, print metrics
+python -m src.train             # run both generalization experiments, print metrics
+python -m src.train_model       # train the production model, save to models/
+streamlit run app/app.py        # launch the web UI (needs models/ from the step above)
 ```
+
+The app takes a pasted email or an uploaded `.eml`, returns a phishing score, and
+shows the words that drove it (exact per-word contributions from the linear model).
 
 ## Project structure
 
 ```
 src/
-├── parse.py        # extract body text from email.message / mbox
-├── load_data.py    # build labeled DataFrame from both corpora
-├── preprocess.py   # HTML cleaning
-└── train.py        # split → TF-IDF → LogReg → evaluate
+├── parse.py         # extract body text from email.message / mbox / .eml
+├── load_data.py     # build labeled DataFrames from every corpus
+├── preprocess.py    # HTML cleaning
+├── features.py      # structured features (URL/TLD counts)
+├── train.py         # experiments: split → TF-IDF (+structured) → LogReg → evaluate
+└── train_model.py   # train production model on all sources → models/
+app/
+└── app.py           # Streamlit UI: email → phishing score + word contributions
 tests/
-└── test_parse.py
+├── test_parse.py
+└── test_features.py
 ```
