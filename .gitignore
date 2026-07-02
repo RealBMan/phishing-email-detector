@@ -223,3 +223,4 @@ venv/
 __pycache__/
 *.pkl
 .env
+.claude/
