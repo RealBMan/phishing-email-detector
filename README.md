@@ -2,7 +2,7 @@
 
 A machine-learning classifier that flags phishing emails, taking raw email
 through parsing, cleaning, and feature extraction to an explainable model. Runs
-fully offline — Python + scikit-learn, with a Streamlit UI that scores an email
+fully offline: Python + scikit-learn, with a Streamlit UI that scores an email
 and highlights the words that drove the decision.
 
 ## Demo
