@@ -4,8 +4,10 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
+from src.preprocess import clean_text
 
 df = load_dataset()
+df["text"] = df["text"].apply(clean_text)
 
 X_train, X_test, y_train, y_test = train_test_split(df["text"], df["label"], 
                                                     test_size=0.2, 
