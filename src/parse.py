@@ -1,4 +1,5 @@
 import email
+from email.message import Message
 
 def extract_body_from_string(raw_email: str) -> str:
     """
@@ -9,6 +10,15 @@ def extract_body_from_string(raw_email: str) -> str:
     """
     
     msg = email.message_from_string(raw_email)
+    return extract_body_from_message(msg)
+
+def extract_body_from_message(msg: Message) -> str:
+    """
+    Extracts the body from an email.message.Message object.
+
+    Args:
+        msg (email.message.Message): The email message object.
+    """
     
     if msg.is_multipart():
         for part in msg.walk():
@@ -20,10 +30,16 @@ def extract_body_from_string(raw_email: str) -> str:
                 payload = part.get_payload(decode=True)
                 if payload is None:
                     return ""
-                return payload.decode(charset, errors="replace")
+                try:
+                    return payload.decode(charset, errors="replace")
+                except LookupError:
+                    return payload.decode("utf-8", errors="replace")
         return ""
     charset = msg.get_content_charset() or "utf-8"
     payload = msg.get_payload(decode=True)
     if payload is None:
         return ""
-    return payload.decode(charset, errors="replace")
+    try:
+        return payload.decode(charset, errors="replace")
+    except LookupError:
+        return payload.decode("utf-8", errors="replace")
