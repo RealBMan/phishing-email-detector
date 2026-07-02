@@ -219,7 +219,7 @@ model limitation — diverse data beats clever features.**
       ceiling, and the resolution: diverse training data lifts phishing_pot recall
       0.58 → 0.99 with no precision cost. Optional follow-up: local sentence
       embeddings vs. TF-IDF.
-- [~] **Phase 3 — UI + explainability.** Streamlit app (paste/upload an email →
+- [x] **Phase 3 — UI + explainability.** Streamlit app (paste/upload an email →
       phishing score + per-word contributions from the linear model) — done.
       Remaining: demo GIF, optional deployment.
 
